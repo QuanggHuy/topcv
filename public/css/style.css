@@ -1,0 +1,83 @@
+.background_search {
+    background-color: aliceblue;
+    /* background-image: url('../images/R(2).jpg'); */
+}
+
+a {
+    text-decoration: none;
+}
+
+.logo_company {
+    background-image: url('../images/R(1).jpg');
+    height: 350px;
+    display: flex;
+    align-items:end;
+}
+
+.tittle_company {
+    color: white;
+    font-weight: bold;
+}
+/* job-detail */
+
+/* Ẩn form ứng tuyển ban đầu */
+#applicationForm {
+    display: none;
+    background-color: white;
+    padding: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+    max-width: 400px; /* Độ rộng tối đa của form */
+    width: 100%;
+}
+
+/* Làm mờ nội dung phía dưới form */
+.blurred {
+    filter: blur(4px);
+}
+
+/* edit form cv*/
+.form-section {
+    margin-bottom: 20px;
+    position: relative;
+}
+.control-buttons {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: none;
+}
+.form-section:hover .control-buttons {
+    display: block;
+}
+
+/* cv */
+.form-wrapper {
+    position: relative; /* Cho phần tử làm bao bọc */
+    height: 800px; /* Điều chỉnh chiều cao theo ý của bạn */
+    overflow-y: auto; /* Cho phép cuộn nếu nội dung vượt quá chiều cao */
+}
+
+
+/* footer */
+footer ul {
+    list-style: none;
+}
+
+footer ul li .tittle {
+    color: #212f3f;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-decoration: none;
+}
+
+footer ul li .content {
+    color: #4d5965;
+    display: block;
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 12px;
+    text-decoration: none;
+
+}
