@@ -262,7 +262,16 @@
                         </li>
 
                         <li class="nav-header">Contact</li>
+                        <li class="nav-item">
+                            <a href="{{ url('/admin/apply/table') }}" class="nav-link bg-success">
+                                <i class="nav-icon fas fa-solid fa-envelope"></i>
 
+                                <p>
+                                    Hồ sơ ứng tuyển
+                                    <span class="badge badge-info right">{{ $notify }}</span>
+                                </p>
+                            </a>
+                        </li>
 
                         <li class="nav-item">
                             <a href="{{ url('/admin/contact/emails') }}" class="nav-link bg-success">

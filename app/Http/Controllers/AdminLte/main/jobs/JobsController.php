@@ -9,12 +9,14 @@ use App\Models\mountains\Mountains_photo;
 use App\Models\mountains\Mountains_video;
 use App\Models\accounts\Accounts;
 use App\Models\companies\Companies;
+use App\Models\cvs\UserCvs;
 use App\Models\groups\Groups;
 use App\Models\groups\Group_mountain;
 use App\Models\location\Country;
 use App\Models\location\City;
 use App\Models\location\Country_mountain;
 use App\Models\emails\Emails;
+use App\Models\jobs\ApplicationsJob;
 use App\Models\jobs\Jobs;
 use App\Models\jobs\Jobs_companies;
 use Illuminate\Support\Facades\File;
@@ -191,7 +193,6 @@ class JobsController extends Controller
         return redirect('/admin/accounts/table');
     }
 
-
     public function proccessUpdate(Request $request)
     {
 
@@ -348,7 +349,6 @@ class JobsController extends Controller
         return view('AdminLte/main-page/rating/rateJobs')->with($data);
     }
 
-
     public function messMaker($icon, $mess, $text)
     {
         session()->put('icon', $icon);
@@ -356,7 +356,22 @@ class JobsController extends Controller
         session()->put('text', $text);
     }
 
+    public function apply(Request $request)
+    {
+        $request->validate([
+            'job_id' => 'required|exists:jobs,id',
+        ]);
+        
+        $deactivated = $request->has('status') ? 0 : 1;
 
+        $application = ApplicationsJob::create([
+            'user_id' => session()->get('user')->id,
+            'job_id' => $request->job_id,
+            'deactivated' => $deactivated,
+        ]);
+
+        return redirect()->back()->with('success', 'Ứng tuyển thành công!');
+    }
 
 
 }

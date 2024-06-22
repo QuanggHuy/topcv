@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminLte\login\LoginController;
 use App\Http\Controllers\AdminLte\main\dashboard\DashboardController;
 use App\Http\Controllers\AdminLte\main\companies\CompaniesController;
 use App\Http\Controllers\AdminLte\main\accounts\AccountsController;
+use App\Http\Controllers\AdminLte\main\apply\ApplyController;
 use App\Http\Controllers\AdminLte\main\articles\ArticlesController;
 use App\Http\Controllers\AdminLte\main\groups\GroupsController;
 use App\Http\Controllers\AdminLte\main\contact\EmailsController;
@@ -59,20 +60,6 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('/test', [LoginController::class, 'test']);
     Route::post('/store', [LoginController::class, 'store'])->name('store');
 
-    // Route::group(['prefix' => 'mountains', 'middleware' => 'checkAdminlogin'], function () {
-    //     Route::get('/table', [MountainsController::class, 'index']);
-    //     Route::post('/activate', [MountainsController::class, 'activate']);
-    //     Route::get('/add', [MountainsController::class, 'addForm']);
-    //     Route::post('/proccessAdd', [MountainsController::class, 'proccessAdd']);
-    //     Route::post('/proccessUpdate', [MountainsController::class, 'proccessUpdate']);
-    //     Route::get('/detail', [MountainsController::class, 'detail']);
-    //     Route::get('/getCurrentInfo', [MountainsController::class, 'getCurrentInfo']);
-    //     Route::post('/addCountry', [MountainsController::class, 'addCountry']);
-    //     Route::post('/addCity', [MountainsController::class, 'addCity']);
-    //     // Route::post('/addCountry', [MountainsController::class, 'addCountry']);
-    //     // Route::post('/addCity', [MountainsController::class, 'addCity']);
-    // });
-
     Route::group(['prefix' => 'companies', 'middleware' => 'checkAdminlogin'], function () {
         Route::get('/table', [CompaniesController::class, 'index']);
         Route::post('/activate', [CompaniesController::class, 'activate']);
@@ -114,15 +101,6 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/getCurrentInfo', [ArticlesController::class, 'getCurrentInfo']);
     });
 
-    // Route::group(['prefix' => 'groups', 'middleware' => 'checkAdminlogin'], function () {
-    //     Route::get('/table', [GroupsController::class, 'index']);
-    //     Route::post('/activate', [GroupsController::class, 'activate']);
-    //     Route::post('/proccessAdd', [GroupsController::class, 'proccessAdd']);
-    //     Route::get('/add', [GroupsController::class, 'addForm']);
-    //     Route::post('/proccessUpdate', [GroupsController::class, 'proccessUpdate']);
-    //     Route::get('/detail', [GroupsController::class, 'detail']);
-    // });
-
     Route::group(['prefix' => 'jobs', 'middleware' => 'checkAdminlogin'], function () {
         Route::get('/table', [JobsController::class, 'index']);
         Route::post('/activate', [JobsController::class, 'activate']);
@@ -139,6 +117,10 @@ Route::group(['prefix' => 'admin'], function () {
     Route::group(['prefix' => 'contact', 'middleware' => 'checkAdminlogin'], function () {
         Route::get('/emails', [EmailsController::class, 'index']);
         Route::post('/read', [EmailsController::class, 'Read']);
+    });
+    Route::group(['prefix' => 'apply', 'middleware' => 'checkAdminlogin'], function () {
+        Route::get('/table', [ApplyController::class, 'index']);
+        Route::post('/read', [ApplyController::class, 'Read']);
     });
 });
 
@@ -188,6 +170,7 @@ Route::group([], function () {
     Route::group(['prefix' => 'jobs', 'middleware' => 'checkUserLogin'], function () {
         Route::get('/', [JobsPageController::class, 'index']);
         Route::get('/detail', [JobsPageController::class, 'detail']);
+        Route::post('/save', [JobsPageController::class, 'apply']);
         Route::get('/search', [JobsPageController::class, 'searchJobs'])->name('searchJobs');
     });
 

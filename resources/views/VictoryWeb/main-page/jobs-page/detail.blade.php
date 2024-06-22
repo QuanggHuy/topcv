@@ -119,6 +119,27 @@
             height: 100%;
         }
     </style>
+    {{--  --}}
+    <style>
+         .modal-backdrop.show {
+            opacity: 0.5;
+        }
+        .modal-dialog {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .modal-content {
+            margin: auto;
+        }
+        .cv-card {
+            cursor: pointer;
+        }
+        .cv-card.selected {
+            border: 2px solid #007bff;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -185,6 +206,46 @@
                                         @endif
                                         Lưu tin
                                     </h1>
+                                </div>
+                            </div>
+                            {{--  --}}
+                            <div class="modal fade" id="applyModal" tabindex="-1" aria-labelledby="applyModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="applyModalLabel">Vui lòng chọn Hồ Sơ CV</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form id="applyForm" action="{{ url('/jobs/apply/save') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="job_id" value="{{ $job->id }}">
+                                                <input type="hidden" name="user_cv_id" id="selected_cv_id">
+                                                @foreach ($user_cvs as $userCv)
+                                                <div class="card mb-2 cv-card" data-cv-id="{{ $userCv->id }}">
+                                                    <div class="row no-gutters">
+                                                        <div class="col-lg-2 d-flex align-items-center">
+                                                            @if ($userCv->image == null || $userCv->image == '' || !File::exists(public_path('img/imageCvs/' . $userCv->id . '/' . $userCv->image)))
+                                                                <img src="{{ asset('/img/articles/unknown.png') }}" class="img-thumbnail" width="100%" height="100%">
+                                                            @else
+                                                                <img src="{{ asset('/img/imageCvs/' . $userCv->id . '/' . $userCv->image) }}" class="img-thumbnail" width="100%" height="100%">
+                                                            @endif
+                                                        </div>
+                                                        <div class="col-lg-10">
+                                                            <div class="card-body">
+                                                                <h5 class="card-title"><a href="{{ url('cv-template/detail/' . $userCv->id) }}">{{ $userCv->name }}</a></h5>
+                                                                <p class="card-text">Thời gian thêm: {{ \Carbon\Carbon::parse($userCv->created_at)->format('d/m/Y') }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                @endforeach
+                                                <button type="submit" class="btn btn-primary mt-3">Gửi</button>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             {{--  --}}
@@ -723,5 +784,26 @@
 
 
         })
+    </script>
+    {{--  --}}
+    <script>
+        $(document).ready(function() {
+            $('#applyButton').click(function() {
+                $('#applyModal').modal('show');
+            });
+
+            $('.cv-card').click(function() {
+                $('.cv-card').removeClass('selected');
+                $(this).addClass('selected');
+                $('#selected_cv_id').val($(this).data('cv-id'));
+            });
+
+            $('#applyForm').submit(function(e) {
+                if (!$('#selected_cv_id').val()) {
+                    e.preventDefault();
+                    alert('Vui lòng chọn một hồ sơ CV.');
+                }
+            });
+        });
     </script>
 @endsection

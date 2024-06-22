@@ -26,6 +26,8 @@ use App\Models\accounts\Rate_Groups;
 use App\Models\accounts\Like_Groups;
 use App\Models\accounts\Like_Jobs;
 use App\Models\accounts\Rate_Jobs;
+use App\Models\cvs\UserCvs;
+use App\Models\jobs\ApplicationsJob;
 use App\Models\jobs\Jobs;
 use Illuminate\Http\Request;
 
@@ -81,6 +83,10 @@ class JobsPageController extends Controller
     public function detail(Request $request)
     {
         $id = $request->get('id');
+        $userId = session()->get('user')->id;
+        $user_cvs = UserCvs::where('user_id', $userId)->get();
+        // dd($user_cvs);
+
         $commentList = DB::table('comments')
             ->select('comments.*', 'user.fullname', 'user.photo', 'user.id')
             ->join('user', 'user.id', '=', 'comments.user_id')
@@ -126,6 +132,7 @@ class JobsPageController extends Controller
 
         $data = [
             'job' => $job,
+            'user_cvs' => $user_cvs,
             'companiesList' => $companiesList,
             'jobsLikeList' => $jobsLikeList,
             'score' => $score,
@@ -169,5 +176,22 @@ class JobsPageController extends Controller
             'jobsLikeList' => $jobsLikeList,
             'scoreList' => $scoreList
         ), 200);
+    }
+    public function apply(Request $request)
+    {
+        // dd($request->all());
+        $request->validate([
+            'job_id' => 'required|exists:jobs,id',
+            'user_cv_id' => 'required|exists:user_cvs,id', // Giả sử có bảng user_cvs
+        ]);
+
+        ApplicationsJob::create([
+            'user_id' => session()->get('user')->id,
+            'job_id' => $request->job_id,
+            'user_cv_id' => $request->user_cv_id,
+            'deactivated' => false,
+        ]);
+
+        return redirect()->back()->with('success', 'Ứng tuyển thành công!');
     }
 }
