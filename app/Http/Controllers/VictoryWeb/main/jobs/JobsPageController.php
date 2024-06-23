@@ -29,6 +29,7 @@ use App\Models\accounts\Rate_Jobs;
 use App\Models\cvs\UserCvs;
 use App\Models\jobs\ApplicationsJob;
 use App\Models\jobs\Jobs;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class JobsPageController extends Controller
@@ -179,6 +180,7 @@ class JobsPageController extends Controller
     }
     public function apply(Request $request)
     {
+        $today = Carbon::today();
         // dd($request->all());
         $request->validate([
             'job_id' => 'required|exists:jobs,id',
@@ -189,6 +191,7 @@ class JobsPageController extends Controller
             'user_id' => session()->get('user')->id,
             'job_id' => $request->job_id,
             'user_cv_id' => $request->user_cv_id,
+            'created' => $today,
             'deactivated' => false,
         ]);
 

@@ -2,6 +2,8 @@
 
 namespace App\Models\jobs;
 
+use App\Models\accounts\Accounts;
+use App\Models\cvs\UserCvs;
 use App\Models\jobs\Jobs;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -18,12 +20,18 @@ class ApplicationsJob extends Model
         'user_id',
         'job_id',
         'user_cv_id',
+        'created',
         'deactivated'
     ];
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Accounts::class);
+    }
+    
+    public function userCv()
+    {
+        return $this->belongsTo(UserCvs::class);
     }
 
     public function job()

@@ -9,6 +9,7 @@ use App\Http\Controllers\AdminLte\main\apply\ApplyController;
 use App\Http\Controllers\AdminLte\main\articles\ArticlesController;
 use App\Http\Controllers\AdminLte\main\groups\GroupsController;
 use App\Http\Controllers\AdminLte\main\contact\EmailsController;
+use App\Http\Controllers\AdminLte\main\jobs\ApplicationController;
 use App\Http\Controllers\AdminLte\main\jobs\JobsController;
 use App\Http\Controllers\VictoryWeb\main\home\HomePageController;
 use App\Http\Controllers\VictoryWeb\main\mountain\MountainPageController;
@@ -119,8 +120,9 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('/read', [EmailsController::class, 'Read']);
     });
     Route::group(['prefix' => 'apply', 'middleware' => 'checkAdminlogin'], function () {
-        Route::get('/table', [ApplyController::class, 'index']);
-        Route::post('/read', [ApplyController::class, 'Read']);
+        Route::get('/table', [ApplicationController::class, 'index']);
+        Route::post('/read', [ApplicationController::class, 'Read']);
+        Route::get('/detail', [ApplicationController::class, 'detail']);
     });
 });
 
@@ -167,10 +169,12 @@ Route::group([], function () {
         Route::get('/search', [ArticlePageController::class, 'searchArticle'])->name('searchArticle');
     });
 
+    // Route::get('/jobs/apply/save', [LoginPageController::class, 'loginForm'])->middleware('RedirectLoginUser::class');
+
     Route::group(['prefix' => 'jobs', 'middleware' => 'checkUserLogin'], function () {
         Route::get('/', [JobsPageController::class, 'index']);
         Route::get('/detail', [JobsPageController::class, 'detail']);
-        Route::post('/save', [JobsPageController::class, 'apply']);
+        Route::post('/apply/save', [JobsPageController::class, 'apply']);
         Route::get('/search', [JobsPageController::class, 'searchJobs'])->name('searchJobs');
     });
 

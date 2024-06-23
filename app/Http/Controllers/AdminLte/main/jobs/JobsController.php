@@ -356,23 +356,6 @@ class JobsController extends Controller
         session()->put('text', $text);
     }
 
-    public function apply(Request $request)
-    {
-        $request->validate([
-            'job_id' => 'required|exists:jobs,id',
-        ]);
-        
-        $deactivated = $request->has('status') ? 0 : 1;
-
-        $application = ApplicationsJob::create([
-            'user_id' => session()->get('user')->id,
-            'job_id' => $request->job_id,
-            'deactivated' => $deactivated,
-        ]);
-
-        return redirect()->back()->with('success', 'Ứng tuyển thành công!');
-    }
-
 
 }
 

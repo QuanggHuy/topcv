@@ -135,7 +135,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0">Emails</h1>
+                        <h1 class="m-0">Hồ sơ ứng tuyển</h1>
                     </div><!-- /.col -->
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -154,62 +154,68 @@
                     <!-- timeline time label -->
                     <div class="time-label">
                         <span class="bg-danger">
-                            New Emails - ({{ $countEs }} received today)
+                            Hồ sơ mới - ({{ $countEs }} received today)
                         </span>
                     </div>
                     <!-- /.timeline-label -->
                     <!-- timeline item -->
-                    @foreach ($newEmails as $email)
+                    @foreach ($newApplications as $apply)
                         <div>
                             <i class="fas bg-danger fa-solid fa-envelope"></i>
                             <div class="timeline-item ">
 
                                 <span class="time w-50 d-flex justify-content-between align-items-center py-1 ">
                                     <span>
-                                        receive at {{ \Carbon\Carbon::parse($email->created)->format('d/m/Y H:i:s') }}
+                                        receive at {{ \Carbon\Carbon::parse($apply->created)->format('d/m/Y H:i:s') }}
                                         &nbsp;<i class="far fa-clock"></i>
                                     </span>
                                     <span>
-                                        @if ($email->status == 0)
+                                        @if ($apply->deactivated == 0)
                                             <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
-                                                data-target="#mask-as-read{{ $email->id }}">
+                                                data-target="#mask-as-read{{ $apply->id }}">
                                                 <i class="fas fa-envelope-open-text"></i>
                                                 Mask as Read
                                             </button>
                                         @else
                                             <button type="button" class="btn btn-success btn-sm" data-toggle="modal"
-                                                data-target="#mask-as-unread{{ $email->id }}">
+                                                data-target="#mask-as-unread{{ $apply->id }}">
                                                 <i class="fas fa-envelope"></i>
                                                 Mask as Unread
                                             </button>
                                         @endif
                                     </span>
                                 </span>
-                                <h3 class="timeline-header ">[From: {{ $email->name }}] - <a
-                                        href="#">{{ $email->email }}</a></h3>
+                                <h3 class="timeline-header ">[From: {{ $apply->user->username }}] - <a
+                                        href="#">{{ $apply->job->name }}</a>
+                                        <span>
+                                            {{-- $job->id --}}
+                                            <a href="{{ url('/admin/apply/detail?id=' . $apply->id) }}"
+                                                class="btn btn-info btn-sm"><i
+                                                    class="fa-solid fa-circle-info"></i></a>
+                                        </span></h3>
                             </div>
                             <div class="timeline-item ">
-                                <h5 class="timeline-header overflow-hidden">{{ $email->message }}</h5>
+                                <h5 class="timeline-header overflow-hidden">{{ $apply->job->name }}</h5>
                             </div>
 
                             <!-- Remove modal -->
-                            <form action="{{ url('/admin/contact/read') }}" method="POST">
+                            <form action="{{ url('/admin/apply/read') }}" method="POST">
                                 @csrf
-                                <input type="hidden" name="id" value="{{ $email->id }}">
+                                <input type="hidden" name="id" value="{{ $apply->id }}">
 
-                                <div class="modal fade" id="mask-as-read{{ $email->id }}">
+                                <div class="modal fade" id="mask-as-read{{ $apply->id }}">
                                     <div class="modal-dialog modal-md">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h4 class="modal-title">Are you sure to mask email as read
-                                                    "{{ $email->id }}"</h4>
+                                                <h4 class="modal-title">Are you sure to mask apply as read
+                                                    "{{ $apply->id }}"</h4>
                                                 <button type="button" class="close" data-dismiss="modal"
                                                     aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
                                             <div class="modal-body text-left">
-                                                <p>This action will mask email as READ</p>
+                                                <p>This action will mask apply as READ</p>
                                             </div>
                                             <div class="modal-footer justify-content-between">
                                                 <button type="button" class="btn btn-default"
@@ -227,19 +233,19 @@
 
                                 <!-- Active modal -->
 
-                                <div class="modal fade" id="mask-as-unread{{ $email->id }}">
+                                <div class="modal fade" id="mask-as-unread{{ $apply->id }}">
                                     <div class="modal-dialog modal-md">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h4 class="modal-title">Are you sure to mask email as unread
-                                                    "{{ $email->id }}"</h4>
+                                                <h4 class="modal-title">Are you sure to mask apply as unread
+                                                    "{{ $apply->id }}"</h4>
                                                 <button type="button" class="close" data-dismiss="modal"
                                                     aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
                                             <div class="modal-body text-left">
-                                                <p>This action will mask email as UNREAD</p>
+                                                <p>This action will mask apply as UNREAD</p>
                                             </div>
                                             <div class="modal-footer justify-content-between">
                                                 <button type="button" class="btn btn-default"
@@ -266,7 +272,7 @@
 
             </div>
         </div>
-        <!--email đã đọc-->
+        <!--hồ sơ đã đọc-->
         <div class="content">
             <div class="container-fluid">
                 {{-- <div class="row"> --}}
@@ -274,62 +280,68 @@
                     <!-- timeline time label -->
                     <div class="time-label">
                         <span class="bg-success">
-                            Old Emails
+                            Hồ sơ đã duyệt
                         </span>
                     </div>
                     <!-- /.timeline-label -->
                     <!-- timeline item -->
-                    @foreach ($oldEmails as $email)
+                    @foreach ($oldApplications as $apply)
                         <div>
                             <i class="fas bg-success fa-solid fa-envelope"></i>
                             <div class="timeline-item ">
 
                                 <span class="time w-50 d-flex justify-content-between align-items-center py-1 ">
                                     <span>
-                                        receive at {{ \Carbon\Carbon::parse($email->created)->format('d/m/Y H:i:s') }}
+                                        receive at {{ \Carbon\Carbon::parse($apply->created)->format('d/m/Y H:i:s') }}
 
                                         &nbsp;<i class="far fa-clock"></i>
                                     </span>
                                     <span>
-                                        @if ($email->status == 0)
+                                        @if ($apply->deactivated == 0)
                                             <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
-                                                data-target="#mask-as-read{{ $email->id }}">
+                                                data-target="#mask-as-read{{ $apply->id }}">
                                                 <i class="fas fa-envelope-open-text"></i>
                                                 Mask as Read
                                             </button>
                                         @else
                                             <button type="button" class="btn btn-success btn-sm" data-toggle="modal"
-                                                data-target="#mask-as-unread{{ $email->id }}">
+                                                data-target="#mask-as-unread{{ $apply->id }}">
                                                 <i class="fas fa-envelope"></i>
                                                 Mask as Unread
                                             </button>
                                         @endif
                                     </span>
                                 </span>
-                                <h3 class="timeline-header ">[From: {{ $email->name }}] - <a
-                                        href="#">{{ $email->email }}</a></h3>
+                                <h3 class="timeline-header ">[From: {{ $apply->user->username }}] - <a
+                                        href="#">{{ $apply->job->name }}</a>
+                                        <span>
+                                            {{-- $job->id --}}
+                                            <a href="{{ url('/admin/apply/detail?id=' . $apply->id) }}"
+                                                class="btn btn-info btn-sm"><i
+                                                    class="fa-solid fa-circle-info"></i></a>
+                                        </span></h3>
                             </div>
                             <div class="timeline-item">
-                                <h5 class="timeline-header overflow-hidden">{{ $email->message }}</h5>
+                                <h5 class="timeline-header overflow-hidden">{{ $apply->job->name }}</h5>
                             </div>
                             <!-- Remove modal -->
-                            <form action="{{ url('/admin/contact/read') }}" method="POST">
+                            <form action="{{ url('/admin/apply/read') }}" method="POST">
                                 @csrf
-                                <input type="hidden" name="id" value="{{ $email->id }}">
+                                <input type="hidden" name="id" value="{{ $apply->id }}">
 
-                                <div class="modal fade" id="mask-as-read{{ $email->id }}">
+                                <div class="modal fade" id="mask-as-read{{ $apply->id }}">
                                     <div class="modal-dialog modal-md">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h4 class="modal-title">Are you sure to mask email as read
-                                                    "{{ $email->id }}"</h4>
+                                                <h4 class="modal-title">Are you sure to mask apply as read
+                                                    "{{ $apply->id }}"</h4>
                                                 <button type="button" class="close" data-dismiss="modal"
                                                     aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
                                             <div class="modal-body text-left">
-                                                <p>This action will mask email as READ</p>
+                                                <p>This action will mask apply as READ</p>
                                             </div>
                                             <div class="modal-footer justify-content-between">
                                                 <button type="button" class="btn btn-default"
@@ -347,19 +359,19 @@
 
                                 <!-- Active modal -->
 
-                                <div class="modal fade" id="mask-as-unread{{ $email->id }}">
+                                <div class="modal fade" id="mask-as-unread{{ $apply->id }}">
                                     <div class="modal-dialog modal-md">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h4 class="modal-title">Are you sure to mask email as unread
-                                                    "{{ $email->id }}"</h4>
+                                                <h4 class="modal-title">Are you sure to mask apply as unread
+                                                    "{{ $apply->id }}"</h4>
                                                 <button type="button" class="close" data-dismiss="modal"
                                                     aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
                                             <div class="modal-body text-left">
-                                                <p>This action will mask email as UNREAD</p>
+                                                <p>This action will mask apply as UNREAD</p>
                                             </div>
                                             <div class="modal-footer justify-content-between">
                                                 <button type="button" class="btn btn-default"

@@ -3,12 +3,13 @@
 namespace App\Models\cvs;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\jobs\ApplicationsJob;
 
 class UserCvs extends Model
 {
     protected $table = 'user_cvs';
 
-    protected $primarykey = 'id';
+    protected $primaryKey = 'id';
 
     public $timestamps = false;
 
@@ -21,5 +22,9 @@ class UserCvs extends Model
         'deactivated'
     ];
 
-    // Định nghĩa mối quan hệ với User (một đơn ứng tuyển thuộc về một người dùng)
+    public function applications()
+    {
+        return $this->hasMany(ApplicationsJob::class, 'user_cv_id');
+    }
 }
+

@@ -612,6 +612,66 @@
                 }
 
             });
+            $(document).ready(function() {
+                $('#applyButton').on('click', function() {
+                    if (!{!! json_encode(session()->has('user')) !!}) {
+                        const swalWithBootstrapButtons = Swal.mixin({
+                            customClass: {
+                                confirmButton: "btn btn-success ms-1",
+                                cancelButton: "btn btn-danger me-1"
+                            },
+                            buttonsStyling: false
+                        });
+                        swalWithBootstrapButtons.fire({
+                            title: "Login required !",
+                            text: "You need to log in to apply for this job!",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonText: "Yes, let me log in",
+                            cancelButtonText: "Close",
+                            reverseButtons: true
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = "{{ url('/login') }}";
+                            }
+                        });
+                    } else {
+                        $('#applyModal').modal('show');
+                    }
+                });
+
+                $('.cv-card').on('click', function() {
+                    $('.cv-card').removeClass('selected');
+                    $(this).addClass('selected');
+                    $('#selected_cv_id').val($(this).data('cv-id'));
+                });
+
+                $('#applyForm').on('submit', function(e) {
+                    e.preventDefault();
+
+                    var form = $(this);
+                    $.ajax({
+                        type: 'POST',
+                        url: form.attr('action'),
+                        data: form.serialize(),
+                        success: function(data) {
+                            $('#applyModal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Application Successful',
+                                text: 'You have successfully applied for this job.'
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Application Failed',
+                                text: 'There was an error applying for this job. Please try again later.'
+                            });
+                        }
+                    });
+                });
+            });
             $(".testimonial-carousel").owlCarousel({
                 autoplay: true,
                 smartSpeed: 1000,
