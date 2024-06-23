@@ -187,7 +187,7 @@
         <!-- About End -->
         <!-- Team Start -->
         <div class="container-fluid team organization-featured py-4">
-            <div class="mx-3    animate__animated animate__bounceInUp">
+            <div class="mx-3 animate__animated animate__bounceInUp">
                 <div class="text-center ">
                     <small
                         class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">Đánh giá</small>
@@ -266,7 +266,7 @@
         <!-- Team End -->
 
         <!-- About Satrt -->
-        <div class="container-fluid">
+        <div class="container">
             <div id="jobs-list" class="row g-5 align-items-top justify-content-around">
                 <div class=" d-flex justify-content-center  col-lg-3 animate__fadeInLeft animate__animated animate__fadeInLeft d-flex align-items-top">
                     <nav class="searchBar  border border-5 border-primary w-75 rounded" id="custom"
@@ -300,6 +300,11 @@
                     </nav>
                 </div>
                 <div class=" col-lg-9   animate__animated animate__fadeInUp">
+                    <div class="row d-flex justify-content-end">
+                        <div class="col-6">
+                            <input type="text" id="search-input" class="form-control mb-3" placeholder="Nhập từ khóa tìm kiếm...">
+                        </div>
+                    </div>
                     <div class="container mt-3 ">
                         <div class="text-center ">
                             <small
@@ -602,8 +607,6 @@
                         }
                     });
                 };
-
-
 
                 SetRatingStarResult();
             });
@@ -944,6 +947,190 @@
 
             // Check on window resize
             $window.resize(checkAndSetup);
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            // Xử lý sự kiện khi người dùng nhập từ khóa tìm kiếm
+            $('#search-input').on('keyup', function() {
+                var query = $(this).val();
+                // Gửi yêu cầu AJAX khi người dùng nhập từ khóa
+                $.ajax({
+                    type: 'GET',
+                    url: "{{ route('searchJobsByKeyword') }}",
+                    data: {
+                        query: query
+                    },
+                    success: function(data) {
+                        $('.jobs-list').empty();
+                        // Duyệt qua mảng jobsList và tạo HTML tương ứng
+                        $.each(data.jobsList, function(index, job) {
+                            var imageUrl = job.photo ? '{{ asset('/img/jobs/') }}/' + job.id + '/' + job.photo : '{{ asset('/img/jobs/unknown.png') }}';
+
+                            var hasScore = false;
+                            var scoreHtml = '';
+                            for (var i = 0; i < data.scoreList.length; i++) {
+                                if (data.scoreList[i].job_id === job.id) {
+                                    scoreHtml = '<input type="hidden" name="whatever1" class="rating-value-result" value="' + data.scoreList[i].avg_score + '">';
+                                    hasScore = true;
+                                    break;
+                                }
+                            }
+                            if (!hasScore) {
+                                scoreHtml = '<input type="hidden" name="whatever1" class="rating-value-result" value="0">';
+                            }
+
+                            var likeIconHtml = '';
+                            if ({!! json_encode(session()->has('user')) !!}) {
+                                var likeClass = data.jobsLikeList.some(like => like.job_id === job.id) ? 'fa-solid' : 'fa-regular';
+                                likeIconHtml = '<i class="' + likeClass + ' heart-icon1 fa-heart"><input type="hidden" class="job-id" value="' + job.id + '"></i>';
+                            } else {
+                                likeIconHtml = '<i class="fa-regular heart-icon1 fa-heart"><input type="hidden" class="job-id" value="' + job.id + '"></i>';
+                            }
+                            var html = '';
+                            html += '<div class="row p-1 align-items-center border border-3 border-success rounded bg-gray my-3">';
+                            html += '    <div class="col-lg-3 d-flex justify-content-center">';
+                            html += '        <img class="w-100 rounded-circle" src="' + imageUrl + '" alt="Jobs photo">';
+                            html += '    </div>';
+                            html += '    <div class="col-lg-9 py-5 py-lg-3">';
+                            html += '        <div class="d-flex justify-content-start star-rating-result">';
+                            html += '            <span class="fa-regular fa-star text-warning" data-rating="1"></span>';
+                            html += '            <span class="fa-regular fa-star text-warning" data-rating="2"></span>';
+                            html += '            <span class="fa-regular fa-star text-warning" data-rating="3"></span>';
+                            html += '            <span class="fa-regular fa-star text-warning" data-rating="4"></span>';
+                            html += '            <span class="fa-regular fa-star text-warning" data-rating="5"></span>';
+                            html += '            ' + scoreHtml;
+                            html += '        </div>';
+                            html += '        <span class="mb-4 fs-2 text-dark fw-bold">' + job.name + ' &nbsp; ' + likeIconHtml + '</span>';
+                            html += '        <ul class="list-inline">';
+                            html += '            <li>';
+                            html += '            </li>';
+                            html += '            <li>';
+                            html += '                <h6><i class="far fa-dot-circle text-primary mr-3"></i>Location (City): ' + (job.city_name ? job.city_name : '&nbsp;updating...') + '</h6>';
+                            html += '            </li>';
+                            html += '        </ul>';
+                            html += '        <a href="{{ url('/jobs/detail?id=') }}' + job.id + '" class="btn btn-primary mt-3 py-2 px-4">Learn More</a>';
+                            html += '    </div>';
+                            html += '</div>';
+
+                            // Thêm HTML vào .jobs-list
+                            $('.jobs-list').append(html);
+                        });
+
+                        setTimeout(function() {
+                            $('.star-rating-result').each(function() {
+                                var $star_rating_result = $(this).find('.fa-star');
+
+                                var SetRatingStarResult = function() {
+                                    return $star_rating_result.each(function() {
+                                        var value = parseInt($star_rating_result.siblings('input.rating-value-result').val());
+
+                                        if (value >= parseInt($(this).data('rating'))) {
+                                            return $(this).removeClass('fa-regular').addClass('fa-solid');
+                                        } else {
+                                            return $(this).removeClass('fa-solid').addClass('fa-regular');
+                                        }
+                                    });
+                                };
+
+                                SetRatingStarResult();
+                            });
+
+                            $('.heart-icon1').on('mouseleave', function() {
+                                $(this).css({
+                                    "transition": "0.3s"
+                                }, {
+                                    "font-size": "25px"
+                                });
+                            });
+
+                            $('.heart-icon1').on('click', function() {
+                                if (!{!! json_encode(session()->has('user')) !!}) {
+                                    const swalWithBootstrapButtons = Swal.mixin({
+                                        customClass: {
+                                            confirmButton: "btn btn-success ms-1",
+                                            cancelButton: "btn btn-danger me-1"
+                                        },
+                                        buttonsStyling: false
+                                    });
+                                    swalWithBootstrapButtons.fire({
+                                        title: "Login required !",
+                                        text: "You need to log in to be able to add items to your favorites list !",
+                                        icon: "warning",
+                                        showCancelButton: true,
+                                        confirmButtonText: "Yes, let me log in ",
+                                        cancelButtonText: "Close",
+                                        reverseButtons: true
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            window.location.href = "{{ url('/login') }}";
+                                        }
+                                    });
+                                } else {
+                                    if ($(this).hasClass('fa-regular')) {
+                                        $.ajax({
+                                            type: 'GET',
+                                            url: "{{ route('addJobs') }}",
+                                            data: {
+                                                jobID: $(this).find('.job-id').val(),
+                                                action: 'add'
+                                            },
+                                            success: function(data) {
+                                                Swal.fire({
+                                                    icon: 'success',
+                                                    title: 'Added to favorite list',
+                                                    text: 'View your list in account detail'
+                                                });
+                                            },
+                                            error: function(xhr, status, error) {
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Action Failed !'
+                                                });
+                                            }
+                                        });
+
+                                        $(this).removeClass('fa-regular');
+                                        $(this).addClass('fa-solid');
+                                    } else {
+                                        $.ajax({
+                                            type: 'GET',
+                                            url: "{{ route('addJobs') }}",
+                                            data: {
+                                                jobID: $(this).find('.job-id').val(),
+                                                action: 'remove'
+                                            },
+                                            success: function(data) {
+                                                Swal.fire({
+                                                    icon: 'success',
+                                                    title: 'Removed from favorite list',
+                                                    text: 'View your list in account detail'
+                                                });
+                                            },
+                                            error: function(xhr, status, error) {
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Action Failed !'
+                                                });
+                                            }
+                                        });
+
+                                        $(this).removeClass('fa-solid');
+                                        $(this).addClass('fa-regular');
+                                    }
+                                }
+                            });
+                        }, 40);
+                    },
+                    error: function(xhr, status, error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Action Failed !'
+                        });
+                    }
+                });
+            });
         });
     </script>
 @endsection

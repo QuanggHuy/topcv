@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\VictoryWeb\main\companies;
 
 use App\Http\Controllers\Controller;
@@ -34,7 +35,7 @@ use Carbon\Carbon;
 class CompaniesPageController extends Controller
 {
     public function index()
-    {   
+    {
 
         $companiesLikeList = null;
         if (session()->has('user')) {
@@ -56,8 +57,8 @@ class CompaniesPageController extends Controller
                 ->limit(15)
                 ->get(),
             'companiesLikeList' => $companiesLikeList,
-            'companiesAlllike'=>Like_Companies::count(),
-            'companiesCount'=>Companies::where('deactivated', 0)->count()
+            'companiesAlllike' => Like_Companies::count(),
+            'companiesCount' => Companies::where('deactivated', 0)->count()
         ];
 
         return view('VictoryWeb/main-page/companies-page/index')->with($data);
@@ -66,28 +67,28 @@ class CompaniesPageController extends Controller
     {
         $id = $request->get('id');
 
-        $commentList=DB::table('comments')
-        ->select('comments.*','user.fullname','user.photo','user.id')
-        ->join('user','user.id','=','comments.user_id')
-        ->where('company_id',$id)
-        ->orderBy('created','DESC')
-        ->get();
+        $commentList = DB::table('comments')
+            ->select('comments.*', 'user.fullname', 'user.photo', 'user.id')
+            ->join('user', 'user.id', '=', 'comments.user_id')
+            ->where('company_id', $id)
+            ->orderBy('created', 'DESC')
+            ->get();
 
         $jobsLikeList = null;
         if (session()->has('user')) {
             $jobsLikeList = Like_Companies::where('user_id', session()->get('user')->id)->get();
         }
-        
+
         $scoreList = DB::table('rates_companies')
-        ->select('company_id', DB::raw('
+            ->select('company_id', DB::raw('
             CASE
                 WHEN AVG(rate_score) - FLOOR(AVG(rate_score)) > 0.5 THEN CEILING(AVG(rate_score))
                 ELSE FLOOR(AVG(rate_score))
             END AS avg_score
         '))
-        ->where('company_id',$id)
-        ->groupBy('company_id')
-        ->first();
+            ->where('company_id', $id)
+            ->groupBy('company_id')
+            ->first();
 
         if ($id == null) {
             return redirect('/companies');
@@ -103,11 +104,9 @@ class CompaniesPageController extends Controller
             $companiesLikeList = Like_Companies::where('user_id', session()->get('user')->id)->get();
         }
 
-        $score=null;
+        $score = null;
         if (session()->has('user')) {
-            $score = Rate_Companies::where('user_id', session()->get('user')->id)->where('company_id',$id)->first();
-
-
+            $score = Rate_Companies::where('user_id', session()->get('user')->id)->where('company_id', $id)->first();
         }
         $data = [
             'company' => $company,
@@ -126,27 +125,28 @@ class CompaniesPageController extends Controller
                 ->limit(10)
                 ->get(),
             'companiesLikeList' => $companiesLikeList,
-            'score'=> $score,
-            'scoreList'=> $scoreList,
-            'jobsLikeList'=>$jobsLikeList,
+            'score' => $score,
+            'scoreList' => $scoreList,
+            'jobsLikeList' => $jobsLikeList,
             'commentList' => $commentList
 
         ];
         return view('VictoryWeb/main-page/companies-page/detail')->with($data);
     }
 
-    public function searchCompanies(Request $request){
+    public function searchCompanies(Request $request)
+    {
         $checkedLocations = $request->input('checkedLocations');
-        $companiesList= Companies::where('deactivated', 0)->get();
-        if($checkedLocations != null){
+        $companiesList = Companies::where('deactivated', 0)->get();
+        if ($checkedLocations != null) {
             $companiesList = DB::table('companies')
-            ->select('companies.id', 'companies.name', 'companies.photo_main', 'companies.photo_background')
-            ->join('country_companies', 'companies.id', '=', 'country_companies.company_id')
-            ->join('countries', 'country_companies.country_id', '=', 'countries.id')
-            ->where('companies.deactivated', 0)
-            ->whereIn('countries.id',$checkedLocations)
-            ->groupBy('companies.id', 'companies.name', 'companies.photo_main', 'companies.photo_background')
-            ->get();
+                ->select('companies.id', 'companies.name', 'companies.photo_main', 'companies.photo_background')
+                ->join('country_companies', 'companies.id', '=', 'country_companies.company_id')
+                ->join('countries', 'country_companies.country_id', '=', 'countries.id')
+                ->where('companies.deactivated', 0)
+                ->whereIn('countries.id', $checkedLocations)
+                ->groupBy('companies.id', 'companies.name', 'companies.photo_main', 'companies.photo_background')
+                ->get();
         }
         $companiesLikeList = null;
         if (session()->has('user')) {
@@ -154,13 +154,23 @@ class CompaniesPageController extends Controller
         }
         //session()->put('mountainSearchList');
 
-                return response()->json(array(
-                    'companiesList'=>$companiesList,
-                    'companiesLikeList'=>$companiesLikeList
-                ), 200);
-
+        return response()->json(array(
+            'companiesList' => $companiesList,
+            'companiesLikeList' => $companiesLikeList
+        ), 200);
     }
+    public function searchCompaniesByKeyword(Request $request)
+    {
+        $query = $request->get('query');
+        
+        $companiesList = Companies::where('name', 'LIKE', "%{$query}%")
+        ->where('deactivated', 0)
+        ->get();
+        $companiesLikeList = []; // Lấy danh sách các công ty được người dùng thích nếu cần
 
-
+        return response()->json([
+            'companiesList' => $companiesList,
+            'companiesLikeList' => $companiesLikeList
+        ]);
+    }
 }
-?>

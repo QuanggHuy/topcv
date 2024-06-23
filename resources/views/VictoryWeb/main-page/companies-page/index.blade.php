@@ -206,13 +206,11 @@
         </div>
         <!-- About End -->
 
-
         <!-- About Satrt -->
-        <div class="container-fluid  ">
+        <div class="container">
 
             <div id="company-list" class="row g-5 align-items-top justify-content-around">
                 <div class="col-lg-3  animate__animated animate__fadeInLeft overflow-hidden" data-wow-delay="0.1s">
-
                     <!-- mon edit   -->
                     <nav class="searchBar mt-2 border border-5 border-primary w-75 rounded " id="custom"
                         style="min-height: 600px">
@@ -226,32 +224,30 @@
                                         <span class="hidden-lg">Locations</span>
                                         <i class=" dropdown-icon fa-solid fa-chevron-down"></i>
                                     </span>
-
-
                                 </a>
                                 <ul class="nav nav-treeview btn-group-vertical locationList "
                                     style="height: 550px; overflow-y:auto; overflow-x:hidden">
-
                                     @foreach ($countryList as $country)
                                         <li class="nav-item px-2 py-1" role="group"
                                             aria-label="Basic checkbox toggle button group">
-
-
                                             <input type="checkbox" class="btn-check w-100 location-search"
                                                 id="location{{ $country->id }}" name='countryFilter[]' autocomplete="off"
                                                 value="{{ $country->id }}">
                                             <label class="btn btn-outline-primary w-100 "
                                                 for="location{{ $country->id }}">{{ $country->name }}</label>
-
                                         </li>
                                     @endforeach
                                 </ul>
                             </li>
                         </ul>
                     </nav>
-
                 </div>
                 <div class="col-lg-9  animate__animated animate__fadeInUp">
+                    <div class="row d-flex justify-content-end">
+                        <div class="col-6">
+                            <input type="text" id="search-input" class="form-control mb-3" placeholder="Nhập từ khóa tìm kiếm...">
+                        </div>
+                    </div>
                     <div class="container mt-3">
                         <div class="text-center wow bounceInUp" data-wow-delay="0.1s">
                             <small
@@ -260,37 +256,6 @@
                         </div>
                         <div class="row gx-4 justify-content-center company-list">
                             @foreach ($companiesList as $company)
-                                {{-- <div class="col-md-4 col-lg-4 wow bounceInUp" data-wow-delay="0.1s">
-                                    <div class="blog-item">
-                                        <div class="overflow-hidden rounded">
-                                            <img src="{{ asset('/') }}img/mountains/{{ $mountain->id }}/{{ $mountain->photo_main }}"
-                                                class="img-fluid w-100" alt="">
-                                        </div>
-                                        <div class="blog-content d-flex rounded bg-light">
-                                            <div class="text-dark bg-primary rounded-start overflow-auto">
-                                            </div>
-                                            <a href="{{ url('/mountains/detail?id=' . $mountain->id) }}"
-                                                class="h5 lh-base my-auto h-100 p-3 fs-5">{{ $mountain->name }}</a>
-                                        </div>
-                                        @if (session()->has('user'))
-                                            @if ($companiesLikeList->contains('mountain_id', $mountain->id) == true)
-                                                <i class="fa-solid heart-icon fa-heart">
-                                                    <input type="hidden" class="mountain-id"
-                                                        value="{{ $mountain->id }}">
-                                                </i>
-                                            @else
-                                                <i class="fa-regular heart-icon fa-heart">
-                                                    <input type="hidden" class="mountain-id"
-                                                        value="{{ $mountain->id }}">
-                                                </i>
-                                            @endif
-                                        @else
-                                            <i class="fa-regular heart-icon fa-heart">
-                                                <input type="hidden" class="mountain-id" value="{{ $mountain->id }}">
-                                            </i>
-                                        @endif
-                                    </div>
-                                </div> --}}
                                 <div class="col-md-4 col-lg-4 wow bounceInUp" data-wow-delay="0.1s">
                                     <div class="blog-item">
                                         <a href="{{ url('/companies/detail?id=' . $company->id) }}">
@@ -842,6 +807,164 @@
 
             // Check on window resize
             $window.resize(checkAndSetup);
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#search-input').on('keyup', function() {
+                var query = $(this).val();
+                // Gửi yêu cầu AJAX khi người dùng nhập từ khóa
+                $.ajax({
+                    type: 'GET',
+                    url: "{{ route('searchCompaniesByKeyword') }}",
+                    data: {
+                        query: query
+                    },
+                    success: function(data) {
+                        $('.company-list').empty();
+                        // Duyệt qua mảng companiesList và tạo HTML tương ứng
+                        $.each(data.companiesList, function(index, company) {
+                            var html = '';
+                            html += '<div class="col-md-4 col-lg-4 wow bounceInUp" data-wow-delay="0.1s">';
+                            html += '   <div class="blog-item">';
+                            html += '       <a href="{{ url('/companies/detail') }}?id=' + company.id + '">';
+                            html += '           <header class="container-fluid p-0">';
+                            html += '               <img class="rounded w-100" src="/img/companies/' + company.id + '/' + company.photo_background +'" alt="">';
+                            html += '           </header>';
+                            html += '           <section class="bg-white border-bottom pb-4">';
+                            html += '               <div class="container container-lg">';
+                            html += '                   <div class="d-flex align-items-start">';
+                            html +='                        <div class="rounded-circle border d-flex justify-content-center align-items-center bg-white" style="min-width: 100px; height: 100px; margin-top: -45px;">';
+                            html += '                           <img class="" style="width: 80px; height: auto;" src="/img/companies/' + company.id + '/' + company.photo_main +'" alt="">';
+                            html += '                       </div>';
+                            html += '                       <b href="/companies/detail?id=' + company.id + '" class="fw-bold">' + company.name + '</b>';
+                            html += '                   </div>';
+                            html += '               </div>';
+                            html += '           </section>';
+                            html += '       </a>';
+                            var companiesLikeList = data.companiesLikeList;
+
+                            if ({!! json_encode(session()->has('user')) !!}) {
+                                var check = false;
+                                companiesLikeList.every(element => {
+                                    if (element.company_id === company.id) {
+                                        html +='        <i class="fa-solid heart-icon fa-heart">  <input type="hidden" class="company-id" value="' + company.id + '">    </i>    ';
+                                        check = true;
+                                        return false;
+                                    }
+                                    return true;
+                                });
+                                if (check == false) {
+                                    html += '        <i class="fa-regular heart-icon fa-heart"> <input type="hidden" class="company-id" value="' + company.id + '">    </i> ';
+                                }
+                            } else {
+                                html += '        <i class="fa-regular heart-icon fa-heart"> <input type="hidden" class="company-id" value="' + company.id + '">    </i> ';
+                            }
+                            html += '            <input type="hidden" class="company-id" value="' + company.id + '">';
+                            html += '        </i>';
+                            html += '    </div>';
+                            html += '</div>';
+
+                            // Thêm HTML vào .company-list
+                            $('.company-list').append(html);
+                        });
+
+                        setTimeout(function() {
+                            $('.heart-icon').on('mouseleave', function() {
+                                $(this).css({
+                                    "transition": "0.3s"
+                                }, {
+                                    "font-size": "40px"
+                                });
+                            });
+
+                            $('.heart-icon').on('click', function() {
+                                if (!{!! json_encode(session()->has('user')) !!}) {
+                                    const swalWithBootstrapButtons = Swal.mixin({
+                                        customClass: {
+                                            confirmButton: "btn btn-success ms-1",
+                                            cancelButton: "btn btn-danger me-1"
+                                        },
+                                        buttonsStyling: false
+                                    });
+
+                                    swalWithBootstrapButtons.fire({
+                                        title: "Login required !",
+                                        text: "You need to log in to be able to add items to your favorites list !",
+                                        icon: "warning",
+                                        showCancelButton: true,
+                                        confirmButtonText: "Yes, let me log in ",
+                                        cancelButtonText: "Close",
+                                        reverseButtons: true
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            window.location.href = "{{ url('/login') }}";
+                                        }
+                                    });
+                                } else {
+                                    if ($(this).hasClass('fa-regular')) {
+                                        $.ajax({
+                                            type: 'GET',
+                                            url: "{{ route('addCompanies') }}",
+                                            data: {
+                                                companyID: $(this).find('.company-id').val(),
+                                                action: 'add'
+                                            },
+                                            success: function(data) {
+                                                Swal.fire({
+                                                    icon: 'success',
+                                                    title: 'Added to favorite list',
+                                                    text: 'View your list in account detail'
+                                                });
+                                            },
+                                            error: function(xhr, status, error) {
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Action Failed !'
+                                                });
+                                            }
+                                        });
+
+                                        $(this).removeClass('fa-regular');
+                                        $(this).addClass('fa-solid');
+                                    } else {
+                                        $.ajax({
+                                            type: 'GET',
+                                            url: "{{ route('addCompanies') }}",
+                                            data: {
+                                                companyID: $(this).find('.company-id').val(),
+                                                action: 'remove'
+                                            },
+                                            success: function(data) {
+                                                Swal.fire({
+                                                    icon: 'success',
+                                                    title: 'Removed from favorite list',
+                                                    text: 'View your list in account detail'
+                                                });
+                                            },
+                                            error: function(xhr, status, error) {
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Action Failed !'
+                                                });
+                                            }
+                                        });
+
+                                        $(this).removeClass('fa-solid');
+                                        $(this).addClass('fa-regular');
+                                    }
+                                }
+                            });
+                        }, 40);
+                    },
+                    error: function(xhr, status, error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Action Failed !'
+                        });
+                    }
+                });
+            });
         });
     </script>
 @endsection

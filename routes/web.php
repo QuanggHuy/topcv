@@ -139,28 +139,21 @@ Route::group([], function () {
     Route::post('/store', [AccountsController::class, 'store'])->name('storeAccountImage');
 
     Route::group(['prefix' => 'account', 'middleware' => 'RedirectProfileUser'], function () {
-
         Route::get('/profile', [AccountPageController::class, 'index']);
-
         Route::post('/proccessUpdate', [AccountPageController::class, 'proccessUpdate']);
-        //like
         Route::get('/CompaniesFavoriteList', [AccountPageController::class, 'addCompanies'])->name('addCompanies');
-
         Route::get('/ArticleFavoriteList', [AccountPageController::class, 'addArticle'])->name('addArticle');
-
         Route::get('/JobsFavoriteList', [AccountPageController::class, 'addJobs'])->name('addJobs');
-        //rate
         Route::get('/CompaniesRateList', [AccountPageController::class, 'rateCompanies'])->name('rateCompanies');
-
         Route::get('/JobsRateList', [AccountPageController::class, 'rateJobs'])->name('rateJobs');
-        //comment
         Route::get('/comment', [AccountPageController::class, 'comment'])->name('comment');
     });
 
     Route::group(['prefix' => 'companies', 'middleware' => 'checkUserLogin'], function () {
         Route::get('/', [CompaniesPageController::class, 'index']);
         Route::get('/detail', [CompaniesPageController::class, 'detail']);
-        Route::get('/search', [CompaniesPageController::class, 'searchCompanies'])->name('searchCompanies');
+        Route::get('/search-companies', [CompaniesPageController::class, 'searchCompanies'])->name('searchCompanies');
+        Route::get('/search-companies-by-keyword', [CompaniesPageController::class, 'searchCompaniesByKeyword'])->name('searchCompaniesByKeyword');
     });
 
     Route::group(['prefix' => 'blogs', 'middleware' => 'checkUserLogin'], function () {
@@ -175,19 +168,17 @@ Route::group([], function () {
         Route::get('/', [JobsPageController::class, 'index']);
         Route::get('/detail', [JobsPageController::class, 'detail']);
         Route::post('/apply/save', [JobsPageController::class, 'apply']);
-        Route::get('/search', [JobsPageController::class, 'searchJobs'])->name('searchJobs');
+        Route::get('/search-job', [JobsPageController::class, 'searchJobs'])->name('searchJobs');
+        Route::get('/search-jobs-by-keyword', [JobsPageController::class, 'searchJobsByKeyword'])->name('searchJobsByKeyword');
     });
 
     Route::group(['prefix' => 'cv-template', 'middleware' => 'checkUserLogin'], function () {
         Route::get('/', [CvsPageController::class, 'index']);
         Route::get('/add-form/{id}', [CvsPageController::class, 'addForm']);
-        // Route::post('/upload-cv-image', [CvsPageController::class, 'uploadCvImage']);
 
         Route::get('/detail/{id}', [CvsPageController::class, 'detail']);
         Route::post('/proccess-add', [CvsPageController::class, 'proccessAdd']);
-        // Route::post('/proccess-update', [CvsPageController::class, 'proccessUpdate']);
         Route::get('/delete/{id}', [CvsPageController::class, 'delete']);
-        // Route::get('/search', [CvsPageController::class, 'searchCvs'])->name('searchCvs');
     });
 
     Route::group(['prefix' => 'aboutus', 'middleware' => 'checkUserLogin'], function () {

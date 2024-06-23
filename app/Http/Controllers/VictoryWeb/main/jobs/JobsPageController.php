@@ -178,6 +178,35 @@ class JobsPageController extends Controller
             'scoreList' => $scoreList
         ), 200);
     }
+    public function searchJobsByKeyword(Request $request)
+    {
+        $query = $request->get('query');
+
+        $jobsList = Jobs::where('name', 'LIKE', "%{$query}%")
+            ->where('deactivated', 0)
+            ->get();
+
+        $scoreList = DB::table('rates_jobs')
+            ->select('job_id', DB::raw('
+            CASE
+                WHEN AVG(rate_score) - FLOOR(AVG(rate_score)) > 0.5 THEN CEILING(AVG(rate_score))
+                ELSE FLOOR(AVG(rate_score))
+            END AS avg_score
+        '))
+            ->groupBy('job_id')
+            ->get();
+
+        $jobsLikeList = null;
+        if (session()->has('user')) {
+            $jobsLikeList = Like_Jobs::where('user_id', session()->get('user')->id)->get();
+        }
+
+        return response()->json(array(
+            'jobsList' => $jobsList,
+            'jobsLikeList' => $jobsLikeList,
+            'scoreList' => $scoreList
+        ), 200);
+    }
     public function apply(Request $request)
     {
         $today = Carbon::today();
