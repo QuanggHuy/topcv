@@ -161,8 +161,7 @@
         <!-- About Satrt -->
         <div class="container-fluid py-3">
             <div id="aboutus" class="container">
-                <div class="row g-5 align-items-center">
-
+                <div class="row g-5">
                     <div class="col-lg-8 wow  animate__animated animate__bounceInUp border-rounded">
                         <div class="row bg-white p-3 rounded">
                             <h5 class="">
@@ -282,20 +281,20 @@
                             <input type="hidden" id="job-id" value="{{ $job->id }}">
                         </div>
                     </div>
-                    <div class="col-lg-4 g-4 border border-5 border-primary roundedwow  animate__animated animate__lightSpeedInRight"
+                    <div class="col-lg-4 roundedwow animate__animated animate__lightSpeedInRight"
                         data-wow-delay="0.1s">
+                        <div class="p-3 border border-5 border-primary">
                         <h1 class="display-5 mb-4 fs-3">Thông tin liên hệ</h1>
                         <p class="mb-4">{!! html_entity_decode($job->contact) !!}</p>
-                        <div class="row g-4  animate__animated  animate__fadeInUp">
+                        <div class="row g-4 animate__animated animate__fadeInUp">
                             <div class="menu-item">
                                 <div class="iframe-rwd rounded">
                                     {!! html_entity_decode($job->api) !!}
                                 </div>
                             </div>
-
                         </div>
-
                     </div>
+                </div>
                 </div>
             </div>
         </div>

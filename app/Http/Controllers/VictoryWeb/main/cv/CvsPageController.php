@@ -19,6 +19,7 @@ use App\Models\UserCvSkills;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Response;
 
 class CvsPageController extends Controller
 {
@@ -102,6 +103,32 @@ class CvsPageController extends Controller
             return view('AdminLte/main-page/companies/test')->with($data);
         }
     }
+    public function proccessUpdate(Request $request)
+    {
+        $id = $request->id;
+        // Validate dữ liệu đầu vào
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        // Tìm bản ghi userCv theo ID
+        $userCv = UserCvs::find($id);
+
+        // Kiểm tra nếu tìm thấy userCv
+        if ($userCv) {
+            // Cập nhật trường name
+            $userCv->name = $request->input('name');
+            
+            // Lưu các thay đổi
+            $userCv->save();
+            
+            // Chuyển hướng lại với thông báo thành công
+            return redirect()->back()->with('success', 'Cập nhật thành công');
+        } else {
+            // Nếu không tìm thấy, chuyển hướng lại với thông báo lỗi
+            return redirect()->back()->with('error', 'Không tìm thấy userCv');
+        }
+    }
     public function detail($id)
     {
         $userCv =  UserCvs::where('id', $id)->first();
@@ -111,10 +138,22 @@ class CvsPageController extends Controller
         ];
         return view('VictoryWeb/main-page/cv-page/detail')->with($data);
     }
+    public function downloadImage($id)
+    {
+        $userCv = UserCvs::find($id);
+
+        if ($userCv && File::exists(public_path('img/imageCvs/' . $userCv->id . '/' . $userCv->image))) {
+            $path = public_path('img/imageCvs/' . $userCv->id . '/' . $userCv->image);
+            $fileName = $userCv->image;
+
+            return Response::download($path, $fileName);
+        } else {
+            return redirect()->back()->with('error', 'Image not found!');
+        }
+    }
     public function delete($id)
     {
-        echo 'qưertyui';
-        // UserCvs::where('id', $id)->delete();
-        // return redirect('/account/profile');
+        UserCvs::where('id', $id)->delete();
+        return redirect('/account/profile');
     }
 }

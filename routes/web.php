@@ -175,9 +175,10 @@ Route::group([], function () {
     Route::group(['prefix' => 'cv-template', 'middleware' => 'checkUserLogin'], function () {
         Route::get('/', [CvsPageController::class, 'index']);
         Route::get('/add-form/{id}', [CvsPageController::class, 'addForm']);
-
         Route::get('/detail/{id}', [CvsPageController::class, 'detail']);
         Route::post('/proccess-add', [CvsPageController::class, 'proccessAdd']);
+        Route::post('/proccess-update', [CvsPageController::class, 'proccessUpdate']);
+        Route::get('/download-image/{id}', [CvsPageController::class, 'downloadImage'])->name('download.image');
         Route::get('/delete/{id}', [CvsPageController::class, 'delete']);
     });
 

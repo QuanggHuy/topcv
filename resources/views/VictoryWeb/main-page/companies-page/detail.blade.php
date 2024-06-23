@@ -156,7 +156,9 @@
                         </h1>
                         <button class="btn btn-success d-flex align-items-center gap-3 py-2 px-3 mt-4">
                             <i class="fa-solid fa-plus"></i>
-                            <span class="fw-bold text-nowrap">Theo dõi công ty</span>
+                            <a href="{{ $company->link }}">
+                                <span class="fw-bold text-nowrap">Theo dõi công ty</span>
+                            </a>
                         </button>
                     </div>
                 </div>
@@ -304,30 +306,6 @@
                                 <span class="text-dark" style="width: 150px;">Mô tả</span>
                             </a>
                         </li>
-                        {{-- <li class="nav-item p-2  animate__animated animate__bounceInLeft --animate-delay-100ms">
-                            <a class="d-flex py-2 mx-2 border border-primary bg-white rounded-pill" data-bs-toggle="pill"
-                                href="#history">
-                                <span class="text-dark" style="width: 150px;">History</span>
-                            </a>
-                        </li>
-                        <li class="nav-item p-2 animate__animated animate__bounceInLeft --animate-delay-300ms">
-                            <a class="d-flex py-2 mx-2 border border-primary bg-white rounded-pill" data-bs-toggle="pill"
-                                href="#guides">
-                                <span class="text-dark" style="width: 150px;">Guides</span>
-                            </a>
-                        </li>
-                        <li class="nav-item p-2 animate__animated animate__bounceInLeft --animate-delay-500ms">
-                            <a class="d-flex py-2 mx-2 border border-primary bg-white rounded-pill" data-bs-toggle="pill"
-                                href="#shelterings">
-                                <span class="text-dark" style="width: 150px;">Sheltering</span>
-                            </a>
-                        </li>
-                        <li class="nav-item p-2 animate__animated animate__bounceInLeft --animate-delay-700ms">
-                            <a class="d-flex py-2 mx-2 border border-primary bg-white rounded-pill" data-bs-toggle="pill"
-                                href="#dangers">
-                                <span class="text-dark" style="width: 150px;">Danger</span>
-                            </a>
-                        </li> --}}
                         <li class="nav-item p-2 animate__animated animate__bounceInLeft --animate-delay-900ms">
                             <a class="d-flex py-2 mx-2 border border-primary bg-white rounded-pill" data-bs-toggle="pill"
                                 href="#articles">
@@ -345,51 +323,6 @@
 
                             </div>
                         </div>
-                        {{-- <div id="history" class="tab-pane fade show p-0">
-                            <div class="row g-4  animate__animated  animate__fadeInUp">
-
-                                <div class="menu-item  text-start">
-
-                                    {!! html_entity_decode($mountain->history) !!}
-                                </div>
-                            </div>
-                        </div>
-                        <div id="guides" class="tab-pane fade show p-0">
-                            <div class="row g-4  animate__animated  animate__fadeInUp">
-
-                                <div class="menu-item  text-start">
-
-                                    {!! html_entity_decode($mountain->guides) !!}
-                                </div>
-
-
-
-                            </div>
-                        </div>
-                        <div id="shelterings" class="tab-pane fade show p-0">
-                            <div class="row g-4 animate__animated  animate__fadeInUp">
-
-                                <div class="menu-item  text-start">
-
-                                    {!! html_entity_decode($mountain->sheltering) !!}
-                                </div>
-
-
-
-                            </div>
-                        </div>
-                        <div id="dangers" class="tab-pane fade show p-0">
-                            <div class="row g-4 animate__animated  animate__fadeInUp">
-
-                                <div class="menu-item  text-start">
-
-                                    {!! html_entity_decode($mountain->dangers) !!}
-                                </div>
-
-
-
-                            </div>
-                        </div> --}}
                         <div id="articles" class="tab-pane fade show p-0">
                             <div class="row g-4 overflow-auto" style="height: 700px">
                                 @foreach ($articleList as $article)
@@ -552,9 +485,6 @@
                                                             value="{{ $job->id }}">
                                                     </i>
                                                 @endif
-
-
-
                                             </div>
                                         </div>
 
@@ -563,8 +493,6 @@
                                 </div>
                             @endforeach
                         @endif
-
-
 
                     </div>
 
@@ -1138,9 +1066,6 @@
 
 
             SetRatingStarResult();
-
-
-
 
         })
         document.addEventListener('DOMContentLoaded', function() {
